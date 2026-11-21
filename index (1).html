@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f3d6e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="KreditHP Pro">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>KreditHP Pro — Kalkulator & Pembukuan Usaha Kredit HP</title>
+<style>
+  :root {
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --primary: #0f3d6e;
+    --primary-2: #1d5fa3;
+    --primary-light: #e6f0fa;
+    --accent: #0d9488;
+    --accent-light: #e6f7f5;
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --danger: #b91c1c;
+    --danger-bg: #fee2e2;
+    --warn: #b45309;
+    --warn-bg: #fef3c7;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #cbd5e1;
+    --radius: 14px;
+    --shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  body { background: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 84px; }
+  body.buyer-mode .seller-only { display: none !important; }
+
+  /* HEADER */
+  .topbar {
+    background: linear-gradient(135deg, var(--primary), #092545);
+    color: #fff;
+    padding: 14px 18px;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    box-shadow: 0 3px 14px rgba(15, 23, 42, 0.16);
+  }
+  .topbar-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(255,255,255,0.16);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1.05rem; letter-spacing: -0.5px;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  .brand h1 { font-size: 1.12rem; font-weight: 800; line-height: 1.2; }
+  .brand p { font-size: 0.74rem; opacity: 0.85; }
+
+  .buyer-toggle {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.14);
+    padding: 6px 12px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.25);
+    cursor: pointer; user-select: none;
+    font-size: 0.8rem; font-weight: 700; color: #fff;
+  }
+  body.buyer-mode .buyer-toggle { background: #0d9488; border-color: #5eead4; }
+  .dot-ind { width: 9px; height: 9px; border-radius: 50%; background: #cbd5e1; }
+  body.buyer-mode .dot-ind { background: #bef264; box-shadow: 0 0 8px #bef264; }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .install-pwa-btn {
+    display: none; align-items: center; gap: 6px;
+    background: #0d9488; color: #fff; border: 1px solid #5eead4;
+    padding: 6px 12px; border-radius: 999px;
+    font-size: 0.78rem; font-weight: 800; cursor: pointer;
+  }
+  .install-pwa-btn.show { display: inline-flex; }
+
+  /* DESKTOP NAV */
+  .nav-desktop {
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 66px;
+    z-index: 30;
+  }
+  .nav-desktop-inner {
+    max-width: 1120px; margin: 0 auto;
+    display: flex; gap: 4px; padding: 0 14px;
+    overflow-x: auto;
+  }
+  .nav-tab {
+    padding: 12px 16px;
+    border: none; background: transparent;
+    color: var(--muted); font-weight: 700; font-size: 0.86rem;
+    cursor: pointer; border-bottom: 3px solid transparent;
+    white-space: nowrap; transition: all 0.15s;
+  }
+  .nav-tab:hover { color: var(--primary); }
+  .nav-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+  /* MOBILE BOTTOM NAV */
+  .nav-mobile {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; border-top: 1px solid #cbd5e1;
+    z-index: 50; box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+  }
+  .nav-mobile-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .nav-m-btn {
+    border: none; background: transparent; padding: 9px 4px 10px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    color: var(--muted); font-size: 0.7rem; font-weight: 700; cursor: pointer;
+  }
+  .nav-m-btn span.ico { font-size: 1.1rem; line-height: 1.1; }
+  .nav-m-btn.active { color: var(--primary); background: var(--primary-light); }
+
+  @media (max-width: 780px) {
+    .nav-desktop { display: none; }
+    .nav-mobile { display: block; }
+  }
+
+  /* LAYOUT */
+  .container { max-width: 1120px; margin: 16px auto; padding: 0 14px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1.12fr; gap: 16px; align-items: start; }
+  @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 0.96rem; font-weight: 800; color: var(--primary);
+    margin-bottom: 14px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--primary-light);
+    display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+
+  /* FORM CONTROLS */
+  .form-group { margin-bottom: 14px; }
+  label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+  .input-wrap {
+    display: flex; align-items: center;
+    border: 1.8px solid var(--border); border-radius: 10px;
+    background: #fff; overflow: hidden; transition: border-color 0.15s;
+  }
+  .input-wrap:focus-within { border-color: var(--primary); }
+  .prefix, .suffix {
+    padding: 9px 11px; background: #f1f5f9; color: var(--muted);
+    font-weight: 700; font-size: 0.88rem;
+  }
+  input[type="text"], input[type="number"], input[type="date"], select, textarea {
+    width: 100%; border: none; padding: 9px 11px;
+    font-size: 0.98rem; font-weight: 700; color: var(--text); outline: none; background: #fff;
+  }
+  select.std-select, input.std-input, textarea.std-input {
+    border: 1.8px solid var(--border); border-radius: 10px; font-weight: 600; font-size: 0.9rem;
+  }
+  select.std-select:focus, input.std-input:focus, textarea.std-input:focus { border-color: var(--primary); }
+
+  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+  .pill {
+    padding: 6px 11px; border-radius: 8px;
+    border: 1.5px solid var(--border); background: #f8fafc;
+    color: var(--text); font-size: 0.8rem; font-weight: 700; cursor: pointer;
+  }
+  .pill:hover { border-color: var(--primary); background: var(--primary-light); }
+  .pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  .choice-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .choice-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .choice-btn {
+    padding: 9px 8px; border-radius: 10px;
+    border: 1.8px solid var(--border); background: #f8fafc;
+    text-align: center; cursor: pointer; transition: all 0.15s;
+  }
+  .choice-btn strong { display: block; font-size: 0.84rem; color: var(--text); }
+  .choice-btn span { display: block; font-size: 0.71rem; color: var(--muted); margin-top: 2px; }
+  .choice-btn.active { background: var(--primary-light); border-color: var(--primary); }
+  .choice-btn.active strong { color: var(--primary); }
+  .choice-btn.teal.active { background: var(--accent-light); border-color: var(--accent); }
+  .choice-btn.teal.active strong { color: #0f766e; }
+
+  .sub-box {
+    background: #f8fafc; border: 1px dashed var(--border);
+    border-radius: 10px; padding: 11px; margin-top: 9px;
+  }
+  .hidden { display: none !important; }
+  .radio-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; font-size: 0.81rem; }
+  .radio-row label { display: flex; align-items: center; gap: 5px; font-weight: 600; cursor: pointer; margin: 0; }
+
+  /* HERO & METRICS */
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  @media (max-width: 500px) { .hero-grid { grid-template-columns: 1fr; } }
+  .metric-box { padding: 13px; border-radius: 12px; border: 1.5px solid #e2e8f0; }
+  .metric-box.blue { background: var(--primary-light); border-color: #bfdbfe; }
+  .metric-box.green { background: var(--success-bg); border-color: #bbf7d0; }
+  .metric-box.amber { background: var(--warn-bg); border-color: #fde68a; }
+  .metric-lbl { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; color: var(--muted); }
+  .metric-val { font-size: 1.32rem; font-weight: 900; margin: 3px 0; color: var(--primary); }
+  .metric-box.green .metric-val { color: var(--success); }
+  .metric-box.amber .metric-val { color: var(--warn); }
+  .metric-sub { font-size: 0.76rem; color: var(--text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-size: 0.72rem; font-weight: 800;
+  }
+  .badge-green { background: var(--success); color: #fff; }
+  .badge-blue { background: var(--primary); color: #fff; }
+  .badge-warn { background: var(--warn); color: #fff; }
+  .badge-red { background: var(--danger); color: #fff; }
+  .badge-soft { background: var(--primary-light); color: var(--primary); }
+
+  .summary-list { list-style: none; border-top: 1px solid #e2e8f0; margin-bottom: 14px; }
+  .summary-list li {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 7px 2px; border-bottom: 1px solid #f1f5f9; font-size: 0.86rem; gap: 8px;
+  }
+  .summary-list li span:first-child { color: var(--muted); }
+  .summary-list li span:last-child { font-weight: 800; color: var(--text); text-align: right; }
+
+  /* COMPOSITION BAR & SVG CHART */
+  .comp-bar-wrap { margin: 12px 0 14px; }
+  .comp-bar {
+    height: 16px; border-radius: 999px; overflow: hidden;
+    display: flex; background: #e2e8f0;
+  }
+  .comp-seg-pokok { background: var(--primary); transition: width 0.25s; }
+  .comp-seg-margin { background: var(--accent); transition: width 0.25s; }
+  .comp-seg-admin { background: #f59e0b; transition: width 0.25s; }
+  .comp-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; font-size: 0.76rem; color: var(--muted); font-weight: 600; }
+  .comp-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .sq { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+  .svg-box {
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 10px; padding: 10px; margin-bottom: 14px;
+  }
+  .svg-title { font-size: 0.79rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; display: flex; justify-content: space-between; }
+
+  /* BUTTONS */
+  .btn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+  @media (max-width: 560px) { .btn-row { grid-template-columns: 1fr; } }
+  .btn {
+    padding: 10px 12px; border-radius: 10px; border: none;
+    font-size: 0.85rem; font-weight: 800; cursor: pointer;
+    transition: opacity 0.15s, transform 0.05s; text-align: center;
+  }
+  .btn:active { transform: scale(0.99); }
+  .btn:hover { opacity: 0.92; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-wa { background: #16a34a; color: #fff; }
+  .btn-teal { background: var(--accent); color: #fff; }
+  .btn-outline { background: #fff; color: var(--primary); border: 1.6px solid var(--primary); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-sm { padding: 6px 10px; font-size: 0.76rem; border-radius: 8px; }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 10px; }
+  .scroll-y { max-height: 250px; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; background: #fff; }
+  th {
+    background: #f1f5f9; color: var(--primary); font-weight: 800;
+    text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--border);
+    position: sticky; top: 0; white-space: nowrap;
+  }
+  th.num, td.num { text-align: right; }
+  td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+  tr.clickable { cursor: pointer; }
+  tr.clickable:hover { background: #f8fafc; }
+  tr.selected-row { background: var(--primary-light) !important; font-weight: 700; }
+  tr.be-row { background: #f0fdf4; }
+
+  /* KPI ROW FOR BOOKKEEPING */
+  .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
+  @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  .kpi-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 12px; box-shadow: var(--shadow);
+  }
+  .kpi-card .k-lbl { font-size: 0.72rem; font-weight: 800; color: var(--muted); text-transform: uppercase; }
+  .kpi-card .k-val { font-size: 1.08rem; font-weight: 900; color: var(--primary); margin-top: 3px; }
+  .kpi-card.green .k-val { color: var(--success); }
+  .kpi-card.amber .k-val { color: var(--warn); }
+
+  /* CONTRACT CARDS */
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .filter-bar input { flex: 1; min-width: 180px; }
+  .contract-card {
+    background: #fff; border: 1.5px solid #e2e8f0; border-radius: 12px;
+    padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow);
+  }
+  .contract-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 10px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;
+  }
+  .contract-meta { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+  .progress-bar { height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin: 10px 0; }
+  .progress-fill { height: 100%; background: var(--accent); transition: width 0.2s; }
+  .inst-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 7px; margin-top: 10px; }
+  .inst-pill {
+    border: 1.5px solid #cbd5e1; border-radius: 9px; padding: 8px;
+    background: #f8fafc; font-size: 0.76rem; cursor: pointer;
+    transition: all 0.15s; text-align: left;
+  }
+  .inst-pill:hover { border-color: var(--primary); }
+  .inst-pill.paid { background: var(--success-bg); border-color: #86efac; }
+  .inst-pill.late { background: var(--danger-bg); border-color: #fca5a5; }
+  .inst-pill strong { display: block; font-size: 0.8rem; color: var(--text); }
+  .contract-actions { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 12px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
+
+  /* MODAL */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55);
+    display: none; align-items: center; justify-content: center;
+    padding: 14px; z-index: 100;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 14px; max-width: 520px; width: 100%;
+    max-height: 90vh; overflow-y: auto; padding: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  }
+  .modal-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid #e2e8f0;
+  }
+  .modal-head h3 { font-size: 1.02rem; color: var(--primary); }
+  .close-btn { border: none; background: #f1f5f9; width: 30px; height: 30px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    background: #0f172a; color: #fff; padding: 10px 18px; border-radius: 999px;
+    font-size: 0.84rem; font-weight: 700; z-index: 120;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.22); text-align: center;
+  }
+  .toast.show { opacity: 1; }
+
+  /* PRINT AREA */
+  #printArea { display: none; }
+  @media print {
+    body > *:not(#printArea) { display: none !important; }
+    #printArea { display: block !important; padding: 20px; color: #000; font-size: 12px; line-height: 1.5; }
+    #printArea h2 { text-align: center; margin-bottom: 4px; font-size: 16px; }
+    #printArea .p-sub { text-align: center; margin-bottom: 14px; font-size: 11px; color: #333; }
+    #printArea table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    #printArea th, #printArea td { border: 1px solid #444; padding: 6px 8px; font-size: 11px; }
+    #printArea .sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 28px; text-align: center; }
+    #printArea .sig-space { height: 64px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-icon">HP</div>
+      <div>
+        <h1 id="headerStoreName">KreditHP Pro</h1>
+        <p>Kalkulator Simulasi, Margin, Arus Kas & Pembukuan Offline</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button type="button" class="install-pwa-btn" id="btnInstallPwa">&#11015; Install App</button>
+      <div class="buyer-toggle" id="buyerModeToggle" title="Sembunyikan untung, margin & modal toko saat layar dilihat pembeli">
+        <span class="dot-ind"></span>
+        <span id="buyerModeLabel">Mode Pembeli: OFF</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="nav-desktop">
+  <div class="nav-desktop-inner">
+    <button class="nav-tab active" data-tab="calc">1. Kalkulator & Profit</button>
+    <button class="nav-tab seller-only" data-tab="book">2. Pembukuan Cicilan</button>
+    <button class="nav-tab" data-tab="catalog">3. Katalog Promo WA</button>
+    <button class="nav-tab seller-only" data-tab="settings">4. Pengaturan & Backup</button>
+  </div>
+</nav>
+
+<main class="container">
+
+  <!-- ===================== TAB 1: KALKULATOR ===================== -->
+  <section class="tab-panel active" id="tab-calc">
+    <div class="grid-2">
+      <!-- INPUT PANEL -->
+      <div class="card">
+        <div class="card-title">
+          <span>Input Simulasi Kredit HP</span>
+          <span class="badge badge-soft" id="badgeTenorTop">Bulanan 3x</span>
+        </div>
+
+        <div class="form-group">
+          <label for="inPokok">Harga Pokok / Modal Unit HP</label>
+          <div class="input-wrap">
+            <span class="prefix">Rp</span>
+            <input type="text" id="inPokok" inputmode="numeric" value="4.000.000">
+          </div>
+          <div class="pill-row" id="quickPrices">
+            <button type="button" class="pill" data-price="1000000">1 Jt</button>
+            <button type="button" class="pill" data-price="2000000">2 Jt</button>
+            <button type="button" class="pill" data-price="2500000">2,5 Jt</button>
+            <button type="button" class="pill" data-price="3000000">3 Jt</button>
+            <button type="button" class="pill active" data-price="4000000">4 Jt</button>
+            <button type="button" class="pill" data-price="5000000">5 Jt</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Pilihan Tenor Cicilan</label>
+          <div class="choice-3" id="tenorChoices">
+            <div class="choice-btn teal active" data-tenor="bulanan">
+              <strong>Bulanan (3x)</strong>
+              <span>3 Bulan</span>
+            </div>
+            <div class="choice-btn teal" data-tenor="mingguan">
+              <strong>Mingguan (12x)</strong>
+              <span>12 Minggu</span>
+            </div>
+            <div class="choice-btn teal" data-tenor="custom">
+              <strong>Custom</strong>
+              <span>2 - 24x</span>
+            </div>
+          </div>
+          <div class="sub-box hidden" id="customTenorBox">
+            <div class="choice-2">
+              <div>
+                <label for="inCustomTenorCount">Jumlah Cicilan (2–24)</label>
+                <div class="input-wrap">
+                  <input type="number" id="inCustomTenorCount" min="2" max="24" value="6">
+                  <span class="suffix">x</span>
+                </div>
+              </div>
+              <div>
+                <label for="inCustomTenorUnit">Satuan Periode</label>
+                <select id="inCustomTenorUnit" class="std-select">
+                  <option value="bulan">Bulanan</option>
+                  <option value="minggu">Mingguan</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group seller-only">
+          <label for="inMargin">Margin Keuntungan (%)</label>
+          <div class="input-wrap">
+            <input type="number" id="inMargin" value="25" min="0" max="200" step="0.5">
+            <span class="suffix">%</span>
+          </div>
+          <div class="pill-row" id="quickMargins">
+            <button type="button" class="pill" data-m="15">15%</button>
+            <button type="button" class="pill" data-m="20">20%</button>
+            <button type="button" class="pill active" data-m="25">25%</button>
+            <button type="button" class="pill" data-m="30">30%</button>
+            <button type="button" class="pill" data-m="35">35%</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Skema Uang Muka (DP) & Biaya Admin</label>
+          <div class="choice-3" id="schemeChoices">
+            <div class="choice-btn active" data-scheme="dp0">
+              <strong>DP 0%</strong>
+              <span>Admin Rp 100rb</span>
+            </div>
+            <div class="choice-btn" data-scheme="dp20">
+              <strong>DP 20%</strong>
+              <span>Admin Rp 50rb</span>
+            </div>
+            <div class="choice-btn" data-scheme="custom">
+              <strong>Custom</strong>
+              <span>Atur DP & Admin</span>
+            </div>
+          </div>
+
+          <div class="sub-box hidden" id="customSchemeBox">
+            <div class="radio-row" style="margin-bottom:8px;">
+              <label><input type="radio" name="customDpMode" value="pct" checked> DP dalam Persen (%)</label>
+              <label><input type="radio" name="customDpMode" value="rp"> DP dalam Rupiah (Rp)</label>
+            </div>
+            <div class="choice-2">
+              <div id="wrapCustomDpPct">
+                <label for="inCustomDpPct">DP (%)</label>
+                <div class="input-wrap">
+                  <input type="number" id="inCustomDpPct" value="10" min="0" max="90" step="1">
+                  <span class="suffix">%</span>
+                </div>
+              </div>
+              <div id="wrapCustomDpRp" class="hidden">
+                <label for="inCustomDpRp">Nominal DP (Rp)</label>
+                <div class="input-wrap">
+                  <span class="prefix">Rp</span>
+                  <input type="text" id="inCustomDpRp" inputmode="numeric" value="500.000">
+                </div>
+              </div>
+              <div>
+                <label for="inCustomAdmin">Biaya Admin (Rp)</label>
+                <div class="input-wrap">
+                  <span class="prefix">Rp</span>
+                  <input type="text" id="inCustomAdmin" inputmode="numeric" value="75.000">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sub-box hidden seller-only" id="marginBasisBox">
+            <label style="margin-bottom:4px;">Basis Hitung Margin (Saat DP &gt; 0):</label>
+            <div class="radio-row">
+              <label><input type="radio" name="marginBasis" value="sisa" checked> Dari Sisa Pokok</label>
+              <label><input type="radio" name="marginBasis" value="pokok"> Dari Harga Pokok Full</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="choice-2">
+          <div class="form-group">
+            <label for="inRoundMode">Pembulatan Angsuran</label>
+            <select id="inRoundMode" class="std-select">
+              <option value="nearest_1000" selected>Terdekat Rp 1.000</option>
+              <option value="ceil_1000">Bulat Atas Rp 1.000</option>
+              <option value="none">Tanpa Pembulatan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="inStartDate">Tanggal Akad / Mulai</label>
+            <input type="date" id="inStartDate" class="std-input">
+          </div>
+        </div>
+
+        <div class="sub-box seller-only">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+            <strong style="font-size:0.82rem; color:var(--warn);">Simulasi Denda Telat (<span id="lblPenaltyRate">0,5</span>%/hari)</strong>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:0.78rem;">Telat:</span>
+              <input type="number" id="inLateDaysSim" min="0" max="60" value="0" style="width:62px; padding:4px 7px; border:1.5px solid var(--border); border-radius:7px; font-size:0.84rem;">
+              <span style="font-size:0.78rem;">hari</span>
+            </div>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text); margin-top:6px; display:flex; justify-content:space-between;">
+            <span>Denda / hari: <strong id="resDendaHarian">Rp 8.335</strong></span>
+            <span>Total Denda: <strong id="resDendaSim" style="color:var(--danger);">Rp 0</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT PANEL -->
+      <div class="card">
+        <div class="card-title">
+          <span id="resHeading">Hasil Simulasi (Bulanan 3x)</span>
+          <span class="badge badge-blue" id="resSchemeBadge">DP 0%</span>
+        </div>
+
+        <div class="hero-grid">
+          <div class="metric-box blue">
+            <div class="metric-lbl" id="lblResAngsuran">Angsuran / Bulan (3x)</div>
+            <div class="metric-val" id="resAngsuran">Rp 1.667.000</div>
+            <div class="metric-sub" id="resAngsuranSub">Eksak: Rp 1.666.667</div>
+          </div>
+          <div class="metric-box green seller-only">
+            <div class="metric-lbl">Total Untung Bersih</div>
+            <div class="metric-val" id="resUntung">Rp 1.101.000</div>
+            <div class="metric-sub">
+              <span class="badge badge-green" id="resRoi">ROI 28,2%</span>
+              <span id="resBep">BEP: Bulan ke-3</span>
+            </div>
+          </div>
+          <div class="metric-box amber" id="buyerTotalAwalBox">
+            <div class="metric-lbl">Total Bayar Awal (DP + Admin)</div>
+            <div class="metric-val" id="resBayarAwal">Rp 100.000</div>
+            <div class="metric-sub" id="resBayarAwalSub">DP Rp 0 + Admin Rp 100.000</div>
+          </div>
+        </div>
+
+        <ul class="summary-list">
+          <li><span>Harga Unit HP</span><span id="detPokok">Rp 4.000.000</span></li>
+          <li><span>Uang Muka (DP)</span><span id="detDp">Rp 0</span></li>
+          <li><span>Biaya Admin Awal</span><span id="detAdmin">Rp 100.000</span></li>
+          <li class="seller-only"><span>Modal Bersih Keluar Toko</span><span id="detModalKeluar" style="color:var(--primary);">Rp 3.900.000</span></li>
+          <li class="seller-only"><span>Sisa Pokok Dibiayai</span><span id="detSisaPokok">Rp 4.000.000</span></li>
+          <li><span id="lblDetTotalCicilan">Total Cicilan (3x Angsuran)</span><span id="detTotalCicilan">Rp 5.001.000</span></li>
+          <li class="seller-only"><span>Total Uang Masuk Toko</span><span id="detTotalMasuk" style="color:var(--success);">Rp 5.101.000</span></li>
+        </ul>
+
+        <!-- VISUAL COMPOSITION BAR (SELLER ONLY) -->
+        <div class="comp-bar-wrap seller-only">
+          <div style="font-size:0.78rem; font-weight:800; color:var(--primary); margin-bottom:5px;">Komposisi Total Uang Masuk</div>
+          <div class="comp-bar">
+            <div class="comp-seg-pokok" id="segPokok" style="width:78%;"></div>
+            <div class="comp-seg-margin" id="segMargin" style="width:20%;"></div>
+            <div class="comp-seg-admin" id="segAdmin" style="width:2%;"></div>
+          </div>
+          <div class="comp-legend">
+            <span><i class="sq" style="background:var(--primary);"></i> Pokok (<b id="legPokokPct">78,4%</b>)</span>
+            <span><i class="sq" style="background:var(--accent);"></i> Margin (<b id="legMarginPct">19,6%</b>)</span>
+            <span><i class="sq" style="background:#f59e0b;"></i> Admin (<b id="legAdminPct">2,0%</b>)</span>
+          </div>
+        </div>
+
+        <!-- SVG CASHFLOW CURVE (SELLER ONLY) -->
+        <div class="svg-box seller-only">
+          <div class="svg-title">
+            <span>Kurva Arus Kas Kumulatif & Titik Balik Modal (BEP)</span>
+            <span id="svgBepTag" style="color:var(--success);">BEP Periode ke-3</span>
+          </div>
+          <svg id="cashflowSvg" viewBox="0 0 460 130" style="width:100%; height:130px; display:block;"></svg>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary seller-only" id="btnOpenSaveModal">+ Simpan Pembukuan</button>
+          <button type="button" class="btn btn-wa" id="btnCopyWa">Salin Penawaran WA</button>
+          <button type="button" class="btn btn-outline" id="btnPrintAkad">Cetak Nota & Akad</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- JADWAL JATUH TEMPO & ARUS KAS -->
+    <div class="card">
+      <div class="card-title">
+        <span id="schedTitle">Jadwal Jatuh Tempo Angsuran (Bulanan 3x)</span>
+        <span class="badge badge-soft" id="schedCountBadge">3 Periode</span>
+      </div>
+      <div class="table-wrap scroll-y">
+        <table>
+          <thead>
+            <tr>
+              <th>Periode</th>
+              <th>Tanggal Jatuh Tempo</th>
+              <th>Keterangan</th>
+              <th class="num">Nominal Bayar</th>
+              <th class="num seller-only">Posisi Kas Toko</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PERBANDINGAN ANTAR MARGIN (SELLER ONLY) -->
+    <div class="card seller-only">
+      <div class="card-title">
+        <span>Perbandingan Otomatis Antar-Margin (Klik Baris untuk Pilih)</span>
+        <span style="font-size:0.76rem; color:var(--muted);">Bulanan 3x vs Mingguan 12x</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Margin</th>
+              <th class="num" id="colCompActive">Angsuran Aktif</th>
+              <th class="num">Ref. Bulanan (3x)</th>
+              <th class="num">Ref. Mingguan (12x)</th>
+              <th class="num">Total Untung Bersih</th>
+              <th class="num">ROI / Modal</th>
+            </tr>
+          </thead>
+          <tbody id="comparisonBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB 2: PEMBUKUAN ===================== -->
+  <section class="tab-panel seller-only" id="tab-book">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="k-lbl">Modal Awal Usaha</div>
+        <div class="k-val" id="kpiModalAwal">Rp 10.000.000</div>
+      </div>
+      <div class="kpi-card">
+        <div class="k-lbl">Sisa Kas Tersedia</div>
+        <div class="k-val" id="kpiSisaKas">Rp 6.649.000</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="k-lbl">Piutang Aktif (Sisa Tagihan)</div>
+        <div class="k-val" id="kpiPiutang">Rp 5.000.000</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="k-lbl">Untung Terealisasi</div>
+        <div class="k-val" id="kpiUntungReal">Rp 0</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="k-lbl">Proyeksi Total Untung</div>
+        <div class="k-val" id="kpiUntungProyeksi">Rp 1.647.000</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>Daftar Kontrak & Tracking Cicilan Pelanggan</span>
+        <button type="button" class="btn btn-primary btn-sm" id="btnNewContractFromBook">+ Tambah dari Kalkulator</button>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="bookSearch" class="std-input" placeholder="Cari nama pembeli atau tipe HP...">
+        <select id="bookFilter" class="std-select" style="max-width:190px;">
+          <option value="all">Semua Status</option>
+          <option value="active">Aktif (Berjalan)</option>
+          <option value="overdue">Lewat Jatuh Tempo</option>
+          <option value="lunas">Lunas</option>
+        </select>
+      </div>
+      <div id="contractsList"></div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB 3: KATALOG PROMO WA ===================== -->
+  <section class="tab-panel" id="tab-catalog">
+    <div class="card">
+      <div class="card-title">
+        <span>Katalog Harga Promo Kredit HP (Siap Kirim WA)</span>
+        <button type="button" class="btn btn-wa btn-sm" id="btnCopyCatalogWa">Salin Katalog Promo WA</button>
+      </div>
+      <div class="choice-3" style="margin-bottom:14px;">
+        <div>
+          <label for="catScheme">Skema Tampilan</label>
+          <select id="catScheme" class="std-select">
+            <option value="both" selected>DP 0% & DP 20%</option>
+            <option value="dp0">DP 0% Saja (Admin 100rb)</option>
+            <option value="dp20">DP 20% Saja (Admin 50rb)</option>
+          </select>
+        </div>
+        <div class="seller-only">
+          <label for="catMargin">Margin Katalog (%)</label>
+          <div class="input-wrap">
+            <input type="number" id="catMargin" value="25" min="5" max="100" step="1">
+            <span class="suffix">%</span>
+          </div>
+        </div>
+        <div>
+          <label for="catAddPrice">Tambah Harga Custom (Rp)</label>
+          <div style="display:flex; gap:6px;">
+            <input type="text" id="catAddPrice" class="std-input" inputmode="numeric" placeholder="Misal: 2.450.000">
+            <button type="button" class="btn btn-primary btn-sm" id="btnAddCatPrice">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Harga HP</th>
+              <th class="num">DP 0% — Bulanan (3x)</th>
+              <th class="num">DP 0% — Mingguan (12x)</th>
+              <th class="num">DP 20% — DP Awal</th>
+              <th class="num">DP 20% — Bulanan (3x)</th>
+              <th class="num">DP 20% — Mingguan (12x)</th>
+              <th class="num seller-only">Untung (DP 0%)</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="catalogBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB 4: PENGATURAN & BACKUP ===================== -->
+  <section class="tab-panel seller-only" id="tab-settings">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Profil Usaha & Parameter Default</div>
+        <div class="form-group">
+          <label for="setStoreName">Nama Usaha / Toko</label>
+          <input type="text" id="setStoreName" class="std-input" placeholder="Contoh: Kredit HP Amanah">
+        </div>
+        <div class="form-group">
+          <label for="setStoreWa">Nomor WhatsApp Toko (Opsional, untuk Nota/Akad)</label>
+          <input type="text" id="setStoreWa" class="std-input" placeholder="Contoh: 081234567890">
+        </div>
+        <div class="form-group">
+          <label for="setStoreAddr">Alamat / Kota Toko</label>
+          <input type="text" id="setStoreAddr" class="std-input" placeholder="Contoh: Surabaya, Jawa Timur">
+        </div>
+        <div class="choice-2">
+          <div class="form-group">
+            <label for="setModalAwal">Modal Awal Usaha (Rp)</label>
+            <input type="text" id="setModalAwal" class="std-input" inputmode="numeric">
+          </div>
+          <div class="form-group">
+            <label for="setPenaltyRate">Denda Telat / Hari (%)</label>
+            <input type="number" id="setPenaltyRate" class="std-input" step="0.1" min="0" max="10">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="setSyarat">Syarat Pengajuan (Tampil di WA & Akad)</label>
+          <input type="text" id="setSyarat" class="std-input">
+        </div>
+        <button type="button" class="btn btn-primary" id="btnSaveSettings" style="width:100%;">Simpan Pengaturan</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Backup, Restore & Export Laporan</div>
+        <p style="font-size:0.84rem; color:var(--muted); margin-bottom:14px;">
+          Semua data tersimpan otomatis di browser perangkat ini (<strong>offline 100%</strong>). Lakukan backup berkala agar data aman jika ganti HP atau hapus cache browser.
+        </p>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button type="button" class="btn btn-teal" id="btnExportJson">Download Backup Data (.JSON)</button>
+          <label class="btn btn-outline" style="margin:0; cursor:pointer;">
+            Restore / Import Backup (.JSON)
+            <input type="file" id="inImportJson" accept=".json" style="display:none;">
+          </label>
+          <button type="button" class="btn btn-wa" id="btnExportCsv">Export Laporan Pembukuan ke Excel (.CSV)</button>
+          <hr style="border:none; border-top:1px solid #e2e8f0; margin:6px 0;">
+          <button type="button" class="btn btn-outline" id="btnRestoreSample">Muat Ulang 2 Data Sampel Uji Coba</button>
+          <button type="button" class="btn btn-danger" id="btnClearAllData">Hapus Semua Kontrak Pembukuan</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- MOBILE STICKY BOTTOM NAV -->
+<nav class="nav-mobile">
+  <div class="nav-mobile-grid">
+    <button class="nav-m-btn active" data-tab="calc"><span class="ico">&#128290;</span>Kalkulator</button>
+    <button class="nav-m-btn seller-only" data-tab="book"><span class="ico">&#128210;</span>Pembukuan</button>
+    <button class="nav-m-btn" data-tab="catalog"><span class="ico">&#128203;</span>Katalog</button>
+    <button class="nav-m-btn seller-only" data-tab="settings"><span class="ico">&#9881;</span>Pengaturan</button>
+  </div>
+</nav>
+
+<!-- MODAL SIMPAN KE PEMBUKUAN -->
+<div class="modal-backdrop" id="modalSave">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Simpan Transaksi ke Pembukuan</h3>
+      <button type="button" class="close-btn" data-close="modalSave">&times;</button>
+    </div>
+    <div id="savePreviewBox" style="background:var(--primary-light); padding:10px 12px; border-radius:10px; font-size:0.82rem; margin-bottom:12px;"></div>
+    <div class="form-group">
+      <label for="mBuyerName">Nama Lengkap Pembeli *</label>
+      <input type="text" id="mBuyerName" class="std-input" placeholder="Contoh: Andi Pratama">
+    </div>
+    <div class="choice-2">
+      <div class="form-group">
+        <label for="mBuyerWa">No. WhatsApp Pembeli</label>
+        <input type="text" id="mBuyerWa" class="std-input" placeholder="0812xxxx">
+      </div>
+      <div class="form-group">
+        <label for="mBuyerNik">No. KTP / NIK (Opsional)</label>
+        <input type="text" id="mBuyerNik" class="std-input" placeholder="3578xxxx">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="mDeviceName">Tipe HP & Kapasitas *</label>
+      <input type="text" id="mDeviceName" class="std-input" placeholder="Contoh: Samsung A35 5G 8/256GB">
+    </div>
+    <div class="form-group">
+      <label for="mNotes">IMEI / Alamat / Catatan</label>
+      <input type="text" id="mNotes" class="std-input" placeholder="IMEI atau catatan jaminan">
+    </div>
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button type="button" class="btn btn-outline" data-close="modalSave" style="flex:1;">Batal</button>
+      <button type="button" class="btn btn-primary" id="btnConfirmSaveContract" style="flex:2;">Simpan Kontrak</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BAYAR ANGSURAN -->
+<div class="modal-backdrop" id="modalPay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="payModalTitle">Konfirmasi Bayar Angsuran</h3>
+      <button type="button" class="close-btn" data-close="modalPay">&times;</button>
+    </div>
+    <div id="payModalInfo" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px 12px; font-size:0.84rem; margin-bottom:12px;"></div>
+    <div class="choice-2">
+      <div class="form-group">
+        <label for="mPayDate">Tanggal Bayar</label>
+        <input type="date" id="mPayDate" class="std-input">
+      </div>
+      <div class="form-group">
+        <label for="mPayLateDays">Keterlambatan (Hari)</label>
+        <input type="number" id="mPayLateDays" class="std-input" min="0" max="180" value="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="mPayPenalty">Nominal Denda (Rp)</label>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="mPayPenalty" class="std-input" inputmode="numeric" value="0">
+        <button type="button" class="btn btn-outline btn-sm" id="btnWaivePenalty" style="white-space:nowrap;">Bebaskan Rp 0</button>
+      </div>
+    </div>
+    <div style="background:var(--success-bg); padding:10px 12px; border-radius:10px; display:flex; justify-content:space-between; font-weight:800; color:var(--success); margin-bottom:14px;">
+      <span>Total Diterima:</span>
+      <span id="mPayTotalDisp">Rp 0</span>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button type="button" class="btn btn-danger btn-sm hidden" id="btnUnpayInst">Batalkan Lunas</button>
+      <button type="button" class="btn btn-outline" data-close="modalPay" style="flex:1;">Tutup</button>
+      <button type="button" class="btn btn-wa" id="btnConfirmPay" style="flex:2;">Tandai Lunas</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRINT AREA -->
+<div id="printArea"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+  const STORAGE_KEY = 'kredithp_pro_v1_data';
+
+  function todayISO() {
+    const d = new Date();
+    const tzOff = d.getTimezoneOffset() * 60000;
+    return new Date(d.getTime() - tzOff).toISOString().slice(0, 10);
+  }
+
+  function addPeriodDate(startISO, idx, unit) {
+    const parts = (startISO || todayISO()).split('-').map(Number);
+    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+    if (unit === 'minggu') {
+      d.setDate(d.getDate() + idx * 7);
+    } else {
+      d.setMonth(d.getMonth() + idx);
+    }
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function fmtDateID(iso) {
+    if (!iso) return '-';
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const p = iso.split('-').map(Number);
+    return `${p[2]} ${months[(p[1] || 1) - 1]} ${p[0]}`;
+  }
+
+  function fmtNum(n) {
+    return Math.round(Number(n) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
+  function fmtRp(n) {
+    const val = Math.round(Number(n) || 0);
+    return (val < 0 ? '-Rp ' : 'Rp ') + fmtNum(Math.abs(val));
+  }
+
+  function parseDigits(str) {
+    const c = String(str || '').replace(/[^0-9]/g, '');
+    return c ? parseInt(c, 10) : 0;
+  }
+
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => el.classList.remove('show'), 2800);
+  }
+
+  function copyText(text, okMsg) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => showToast(okMsg)).catch(() => fallbackCopy(text, okMsg));
+    } else {
+      fallbackCopy(text, okMsg);
+    }
+  }
+
+  function fallbackCopy(text, okMsg) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      showToast(okMsg);
+    } catch (e) {
+      showToast('Gagal menyalin otomatis');
+    }
+    document.body.removeChild(ta);
+  }
+
+  function createSampleContracts() {
+    const start1 = addPeriodDate(todayISO(), -1, 'bulan');
+    const start2 = addPeriodDate(todayISO(), -4, 'minggu');
+
+    const inst1 = [1,2,3].map(i => ({
+      no: i,
+      dueDate: addPeriodDate(start1, i, 'bulan'),
+      amount: 1667000,
+      paid: i === 1,
+      paidDate: i === 1 ? addPeriodDate(start1, 1, 'bulan') : '',
+      lateDays: 0,
+      penalty: 0
+    }));
+
+    const inst2 = Array.from({length: 12}, (_, k) => {
+      const i = k + 1;
+      return {
+        no: i,
+        dueDate: addPeriodDate(start2, i, 'minggu'),
+        amount: 208000,
+        paid: i <= 4,
+        paidDate: i <= 4 ? addPeriodDate(start2, i, 'minggu') : '',
+        lateDays: 0,
+        penalty: 0
+      };
+    });
+
+    return [
+      {
+        id: 'KHP-1001',
+        buyerName: 'Budi Santoso',
+        buyerWa: '081234567890',
+        buyerNik: '3578011205950001',
+        deviceName: 'Samsung Galaxy A35 5G 8/256GB',
+        notes: 'Contoh data sampel (DP 0%, Bulanan 3x)',
+        startDate: start1,
+        pokok: 4000000,
+        dp: 0,
+        dpPct: 0,
+        admin: 100000,
+        marginPct: 25,
+        tenorCount: 3,
+        tenorUnit: 'bulan',
+        angsuran: 1667000,
+        installments: inst1
+      },
+      {
+        id: 'KHP-1002',
+        buyerName: 'Siti Aminah',
+        buyerWa: '085612345678',
+        buyerNik: '3578025408980002',
+        deviceName: 'Redmi Note 13 8/256GB',
+        notes: 'Contoh data sampel (DP 20%, Mingguan 12x)',
+        startDate: start2,
+        pokok: 2500000,
+        dp: 500000,
+        dpPct: 20,
+        admin: 50000,
+        marginPct: 25,
+        tenorCount: 12,
+        tenorUnit: 'minggu',
+        angsuran: 208000,
+        installments: inst2
+      }
+    ];
+  }
+
+  function defaultData() {
+    return {
+      settings: {
+        storeName: 'KreditHP Pro',
+        storeWa: '',
+        storeAddr: 'Indonesia',
+        modalAwal: 10000000,
+        penaltyRate: 0.5,
+        syarat: 'KTP, KK & Slip Gaji / Bukti Penghasilan'
+      },
+      catalogPrices: [1000000, 1500000, 2000000, 2500000, 3000000, 3500000, 4000000, 4500000, 5000000, 6000000],
+      contracts: createSampleContracts()
+    };
+  }
+
+  let db = defaultData();
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.settings && Array.isArray(parsed.contracts)) {
+        db = parsed;
+      }
+    }
+  } catch (e) {}
+
+  function saveDB() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); } catch (e) {}
+  }
+
+  // CALCULATOR STATE
+  const calcState = {
+    pokok: 4000000,
+    tenorMode: 'bulanan', // bulanan | mingguan | custom
+    customTenorCount: 6,
+    customTenorUnit: 'bulan',
+    marginPct: 25,
+    scheme: 'dp0', // dp0 | dp20 | custom
+    customDpMode: 'pct', // pct | rp
+    customDpPct: 10,
+    customDpRp: 500000,
+    customAdmin: 75000,
+    marginBasis: 'sisa', // sisa | pokok
+    roundMode: 'nearest_1000', // nearest_1000 | ceil_1000 | none
+    startDate: todayISO(),
+    lateDaysSim: 0
+  };
+
+  let buyerMode = false;
+  let activePayTarget = null; // { contractId, instNo }
+
+  function getTenorInfo(modeOverride) {
+    const m = modeOverride || calcState.tenorMode;
+    if (m === 'bulanan') return { count: 3, unit: 'bulan', label: 'Bulanan (3 Bulan)', short: 'Bulanan 3x', per: 'Bulan' };
+    if (m === 'mingguan') return { count: 12, unit: 'minggu', label: 'Mingguan (12 Minggu)', short: 'Mingguan 12x', per: 'Minggu' };
+    const cnt = Math.min(24, Math.max(2, parseInt(calcState.customTenorCount, 10) || 6));
+    const u = calcState.customTenorUnit === 'minggu' ? 'minggu' : 'bulan';
+    const per = u === 'minggu' ? 'Minggu' : 'Bulan';
+    return { count: cnt, unit: u, label: `Custom (${cnt} ${per})`, short: `${per}an ${cnt}x`, per };
+  }
+
+  function getSchemeInfo(pokokVal) {
+    if (calcState.scheme === 'dp0') {
+      return { dp: 0, dpPct: 0, admin: 100000, badge: 'DP 0% (Admin 100rb)' };
+    }
+    if (calcState.scheme === 'dp20') {
+      const dp = Math.round(pokokVal * 0.2);
+      return { dp, dpPct: 20, admin: 50000, badge: 'DP 20% (Admin 50rb)' };
+    }
+    let dp = 0;
+    let dpPct = 0;
+    if (calcState.customDpMode === 'pct') {
+      dpPct = Math.min(90, Math.max(0, Number(calcState.customDpPct) || 0));
+      dp = Math.round(pokokVal * dpPct / 100);
+    } else {
+      dp = Math.min(pokokVal, Math.max(0, Number(calcState.customDpRp) || 0));
+      dpPct = pokokVal > 0 ? Math.round((dp / pokokVal) * 1000) / 10 : 0;
+    }
+    const admin = Math.max(0, Number(calcState.customAdmin) || 0);
+    return { dp, dpPct, admin, badge: `DP ${dpPct}% (Custom)` };
+  }
+
+  function computeCalc(marginOverride, tenorOverride) {
+    const p = Math.max(0, Number(calcState.pokok) || 0);
+    const m = marginOverride !== undefined ? marginOverride : Math.max(0, Number(calcState.marginPct) || 0);
+    const t = getTenorInfo(tenorOverride);
+    const s = getSchemeInfo(p);
+
+    const sisaPokok = Math.max(0, p - s.dp);
+    const basis = (s.dp > 0 && calcState.marginBasis === 'pokok') ? p : sisaPokok;
+    const marginNominal = basis * (m / 100);
+    const totalCicilanRaw = sisaPokok + marginNominal;
+    const angsuranExact = totalCicilanRaw / t.count;
+
+    let angsuran = Math.round(angsuranExact);
+    if (calcState.roundMode === 'nearest_1000') angsuran = Math.round(angsuranExact / 1000) * 1000;
+    else if (calcState.roundMode === 'ceil_1000') angsuran = Math.ceil(angsuranExact / 1000) * 1000;
+
+    const totalCicilanBayar = angsuran * t.count;
+    const totalUangMasuk = s.dp + s.admin + totalCicilanBayar;
+    const totalUntung = totalUangMasuk - p;
+    const modalKeluar = Math.max(0, p - s.dp - s.admin);
+    const roi = modalKeluar > 0 ? (totalUntung / modalKeluar) * 100 : (p > 0 ? (totalUntung / p) * 100 : 0);
+    const bep = angsuran > 0 ? Math.ceil(modalKeluar / angsuran) : 0;
+    const penaltyRate = Number(db.settings.penaltyRate) || 0.5;
+    const dendaHarian = Math.round(angsuran * (penaltyRate / 100));
+
+    return {
+      p, m, t, ...s, sisaPokok, marginNominal, angsuranExact, angsuran,
+      totalCicilanBayar, totalUangMasuk, totalUntung, modalKeluar, roi, bep, dendaHarian
+    };
+  }
+
+  function renderSvgCurve(res) {
+    const svg = document.getElementById('cashflowSvg');
+    const pts = [];
+    let bal = -res.modalKeluar;
+    pts.push({ idx: 0, val: bal });
+    for (let i = 1; i <= res.t.count; i++) {
+      bal += res.angsuran;
+      pts.push({ idx: i, val: bal });
+    }
+    const vals = pts.map(o => o.val);
+    const minV = Math.min(...vals, -100000);
+    const maxV = Math.max(...vals, 100000);
+    const span = maxV - minV || 1;
+    const padL = 16, padR = 16, padT = 16, padB = 22;
+    const W = 460 - padL - padR;
+    const H = 130 - padT - padB;
+
+    const mapX = i => padL + (i / res.t.count) * W;
+    const mapY = v => padT + ((maxV - v) / span) * H;
+    const zeroY = mapY(0);
+
+    const pathD = pts.map((pt, i) => `${i === 0 ? 'M' : 'L'} ${mapX(pt.idx).toFixed(1)} ${mapY(pt.val).toFixed(1)}`).join(' ');
+    const areaD = `${pathD} L ${mapX(res.t.count).toFixed(1)} ${zeroY.toFixed(1)} L ${mapX(0).toFixed(1)} ${zeroY.toFixed(1)} Z`;
+
+    let circles = '';
+    pts.forEach(pt => {
+      const cx = mapX(pt.idx).toFixed(1);
+      const cy = mapY(pt.val).toFixed(1);
+      const isBep = pt.idx === res.bep && res.bep > 0;
+      const fill = isBep ? '#16a34a' : (pt.val < 0 ? '#b45309' : '#0f3d6e');
+      const r = isBep ? 5.5 : 3.2;
+      circles += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#fff" stroke-width="1.5"></circle>`;
+    });
+
+    const bepX = res.bep > 0 && res.bep <= res.t.count ? mapX(res.bep).toFixed(1) : null;
+    const bepLine = bepX
+      ? `<line x1="${bepX}" y1="${padT}" x2="${bepX}" y2="${130 - padB}" stroke="#16a34a" stroke-dasharray="3,3" stroke-width="1.2" />`
+      : '';
+
+    svg.innerHTML = `
+      <line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${460 - padR}" y2="${zeroY.toFixed(1)}" stroke="#94a3b8" stroke-dasharray="4,3" stroke-width="1.2" />
+      <text x="${padL + 2}" y="${(zeroY - 4).toFixed(1)}" font-size="9" fill="#64748b" font-weight="700">Rp 0 (Balik Modal)</text>
+      ${bepLine}
+      <path d="${areaD}" fill="rgba(13, 148, 136, 0.14)" />
+      <path d="${pathD}" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      ${circles}
+      <text x="${padL}" y="124" font-size="9" fill="#64748b">${res.t.per} 0</text>
+      <text x="${460 - padR}" y="124" text-anchor="end" font-size="9" fill="#15803d" font-weight="700">${res.t.per} ${res.t.count} (+${fmtNum(res.totalUntung)})</text>
+    `;
+  }
+
+  function renderCalc() {
+    const res = computeCalc();
+    document.getElementById('badgeTenorTop').textContent = res.t.short;
+    document.getElementById('resHeading').textContent = `Hasil Simulasi (${res.t.label})`;
+    document.getElementById('resSchemeBadge').textContent = res.badge;
+    document.getElementById('lblResAngsuran').textContent = `Angsuran / ${res.t.per} (${res.t.count}x)`;
+    document.getElementById('resAngsuran').textContent = fmtRp(res.angsuran);
+    document.getElementById('resAngsuranSub').textContent = calcState.roundMode === 'none'
+      ? 'Hitungan eksak tanpa pembulatan'
+      : `Eksak: ${fmtRp(res.angsuranExact)} (dibulatkan)`;
+
+    document.getElementById('resUntung').textContent = fmtRp(res.totalUntung);
+    document.getElementById('resRoi').textContent = `ROI ${res.roi.toFixed(1).replace('.', ',')}%`;
+    document.getElementById('resBep').textContent = res.bep === 0 ? 'Balik modal di awal' : `BEP: ${res.t.per} ke-${Math.min(res.bep, res.t.count)}`;
+    document.getElementById('svgBepTag').textContent = res.bep === 0 ? 'BEP di Awal' : `BEP ${res.t.per} ke-${Math.min(res.bep, res.t.count)}`;
+
+    const bayarAwal = res.dp + res.admin;
+    document.getElementById('resBayarAwal').textContent = fmtRp(bayarAwal);
+    document.getElementById('resBayarAwalSub').textContent = `DP ${fmtRp(res.dp)} + Admin ${fmtRp(res.admin)}`;
+
+    document.getElementById('detPokok').textContent = fmtRp(res.p);
+    document.getElementById('detDp').textContent = fmtRp(res.dp);
+    document.getElementById('detAdmin').textContent = fmtRp(res.admin);
+    document.getElementById('detModalKeluar').textContent = fmtRp(res.modalKeluar);
+    document.getElementById('detSisaPokok').textContent = fmtRp(res.sisaPokok);
+    document.getElementById('lblDetTotalCicilan').textContent = `Total Cicilan (${res.t.count}x Angsuran)`;
+    document.getElementById('detTotalCicilan').textContent = fmtRp(res.totalCicilanBayar);
+    document.getElementById('detTotalMasuk').textContent = fmtRp(res.totalUangMasuk);
+
+    // Penalty sim
+    document.getElementById('lblPenaltyRate').textContent = String(db.settings.penaltyRate).replace('.', ',');
+    document.getElementById('resDendaHarian').textContent = fmtRp(res.dendaHarian);
+    document.getElementById('resDendaSim').textContent = fmtRp(res.dendaHarian * (Number(calcState.lateDaysSim) || 0));
+
+    // Composition Bar
+    const tot = Math.max(1, res.totalUangMasuk);
+    const pokokPct = Math.min(100, (res.p / tot) * 100);
+    const adminPct = Math.min(100 - pokokPct, (res.admin / tot) * 100);
+    const marginPct = Math.max(0, 100 - pokokPct - adminPct);
+    document.getElementById('segPokok').style.width = pokokPct.toFixed(1) + '%';
+    document.getElementById('segMargin').style.width = marginPct.toFixed(1) + '%';
+    document.getElementById('segAdmin').style.width = adminPct.toFixed(1) + '%';
+    document.getElementById('legPokokPct').textContent = pokokPct.toFixed(1).replace('.', ',') + '%';
+    document.getElementById('legMarginPct').textContent = marginPct.toFixed(1).replace('.', ',') + '%';
+    document.getElementById('legAdminPct').textContent = adminPct.toFixed(1).replace('.', ',') + '%';
+
+    // SVG Chart
+    renderSvgCurve(res);
+
+    // Margin basis visibility
+    document.getElementById('marginBasisBox').classList.toggle('hidden', res.dp <= 0);
+
+    // Schedule Table
+    document.getElementById('schedTitle').textContent = `Jadwal Jatuh Tempo Angsuran (${res.t.label})`;
+    document.getElementById('schedCountBadge').textContent = `${res.t.count} Periode`;
+
+    let runBal = -res.modalKeluar;
+    let beDone = runBal >= 0;
+    const rowsHtml = [];
+    rowsHtml.push(`
+      <tr>
+        <td><strong>${res.t.per} 0</strong></td>
+        <td>${fmtDateID(calcState.startDate)}</td>
+        <td>Akad — Bayar DP + Admin</td>
+        <td class="num" style="font-weight:700;">${fmtRp(bayarAwal)}</td>
+        <td class="num seller-only" style="color:#b91c1c; font-weight:700;">${fmtRp(runBal)}</td>
+      </tr>
+    `);
+
+    for (let i = 1; i <= res.t.count; i++) {
+      runBal += res.angsuran;
+      const justBe = !beDone && runBal >= 0;
+      if (justBe) beDone = true;
+      const due = addPeriodDate(calcState.startDate, i, res.t.unit);
+      const note = i === res.t.count ? `Angsuran ke-${i} (Lunas)` : (justBe ? `Angsuran ke-${i} (Balik Modal)` : `Angsuran ke-${i}`);
+      rowsHtml.push(`
+        <tr class="${justBe ? 'be-row' : ''}">
+          <td><strong>${res.t.per} ${i}</strong></td>
+          <td>${fmtDateID(due)}</td>
+          <td>${note}</td>
+          <td class="num" style="font-weight:700; color:var(--primary);">${fmtRp(res.angsuran)}</td>
+          <td class="num seller-only" style="color:${runBal < 0 ? '#b45309' : '#15803d'}; font-weight:700;">${fmtRp(runBal)}</td>
+        </tr>
+      `);
+    }
+    document.getElementById('scheduleBody').innerHTML = rowsHtml.join('');
+
+    // Comparison table
+    document.getElementById('colCompActive').textContent = `Aktif (${res.t.short})`;
+    const tiers = [15, 20, 25, 30, 35];
+    if (!tiers.includes(res.m)) {
+      tiers.push(res.m);
+      tiers.sort((a, b) => a - b);
+    }
+    const compBody = document.getElementById('comparisonBody');
+    compBody.innerHTML = tiers.map(mt => {
+      const cAct = computeCalc(mt);
+      const cBln = computeCalc(mt, 'bulanan');
+      const cMgg = computeCalc(mt, 'mingguan');
+      const active = Math.abs(mt - res.m) < 0.001;
+      return `
+        <tr class="clickable ${active ? 'selected-row' : ''}" data-m="${mt}">
+          <td>${mt}% ${active ? '<span class="badge badge-blue">Aktif</span>' : ''}</td>
+          <td class="num">${fmtRp(cAct.angsuran)}</td>
+          <td class="num">${fmtRp(cBln.angsuran)}</td>
+          <td class="num">${fmtRp(cMgg.angsuran)}</td>
+          <td class="num" style="color:var(--success); font-weight:800;">${fmtRp(cAct.totalUntung)}</td>
+          <td class="num">${cAct.roi.toFixed(1).replace('.', ',')}%</td>
+        </tr>
+      `;
+    }).join('');
+
+    compBody.querySelectorAll('tr').forEach(tr => {
+      tr.addEventListener('click', () => {
+        calcState.marginPct = parseFloat(tr.dataset.m);
+        document.getElementById('inMargin').value = calcState.marginPct;
+        syncMarginPills();
+        renderCalc();
+      });
+    });
+  }
+
+  function syncPricePills() {
+    document.querySelectorAll('#quickPrices .pill').forEach(b => {
+      b.classList.toggle('active', parseInt(b.dataset.price, 10) === calcState.pokok);
+    });
+  }
+  function syncMarginPills() {
+    document.querySelectorAll('#quickMargins .pill').forEach(b => {
+      b.classList.toggle('active', parseFloat(b.dataset.m) === calcState.marginPct);
+    });
+  }
+
+  // ===================== BOOKKEEPING RENDER =====================
+  function getContractSummary(c) {
+    const today = todayISO();
+    const paidCount = c.installments.filter(x => x.paid).length;
+    const totalCount = c.installments.length;
+    const paidCicilan = c.installments.filter(x => x.paid).reduce((a, b) => a + b.amount, 0);
+    const totalPenalty = c.installments.filter(x => x.paid).reduce((a, b) => a + (b.penalty || 0), 0);
+    const totalTagihanCicilan = c.installments.reduce((a, b) => a + b.amount, 0);
+    const sisaTagihan = Math.max(0, totalTagihanCicilan - paidCicilan);
+    const modalKeluar = Math.max(0, c.pokok - c.dp - c.admin);
+    const uangMasukSaatIni = c.dp + c.admin + paidCicilan + totalPenalty;
+    const untungTerealisasi = Math.max(0, uangMasukSaatIni - c.pokok);
+    const proyeksiUntung = (c.dp + c.admin + totalTagihanCicilan + totalPenalty) - c.pokok;
+    const isLunas = paidCount === totalCount;
+    const hasOverdue = c.installments.some(x => !x.paid && x.dueDate < today);
+    const nextUnpaid = c.installments.find(x => !x.paid);
+    return {
+      paidCount, totalCount, paidCicilan, totalPenalty, sisaTagihan,
+      modalKeluar, uangMasukSaatIni, untungTerealisasi, proyeksiUntung,
+      isLunas, hasOverdue, nextUnpaid
+    };
+  }
+
+  function renderBookkeeping() {
+    const modalAwal = Number(db.settings.modalAwal) || 0;
+    let totModalKeluar = 0;
+    let totCicilanMasuk = 0;
+    let totDendaMasuk = 0;
+    let totPiutang = 0;
+    let totUntungReal = 0;
+    let totUntungProyeksi = 0;
+
+    db.contracts.forEach(c => {
+      const s = getContractSummary(c);
+      totModalKeluar += s.modalKeluar;
+      totCicilanMasuk += s.paidCicilan;
+      totDendaMasuk += s.totalPenalty;
+      totPiutang += s.sisaTagihan;
+      totUntungReal += s.untungTerealisasi;
+      totUntungProyeksi += s.proyeksiUntung;
+    });
+
+    const sisaKas = modalAwal - totModalKeluar + totCicilanMasuk + totDendaMasuk;
+
+    document.getElementById('kpiModalAwal').textContent = fmtRp(modalAwal);
+    document.getElementById('kpiSisaKas').textContent = fmtRp(sisaKas);
+    document.getElementById('kpiPiutang').textContent = fmtRp(totPiutang);
+    document.getElementById('kpiUntungReal').textContent = fmtRp(totUntungReal);
+    document.getElementById('kpiUntungProyeksi').textContent = fmtRp(totUntungProyeksi);
+
+    const q = (document.getElementById('bookSearch').value || '').trim().toLowerCase();
+    const flt = document.getElementById('bookFilter').value;
+    const today = todayISO();
+
+    const filtered = db.contracts.filter(c => {
+      const s = getContractSummary(c);
+      const matchText = !q || c.buyerName.toLowerCase().includes(q) || c.deviceName.toLowerCase().includes(q) || c.id.toLowerCase().includes(q);
+      if (!matchText) return false;
+      if (flt === 'active') return !s.isLunas;
+      if (flt === 'lunas') return s.isLunas;
+      if (flt === 'overdue') return s.hasOverdue;
+      return true;
+    });
+
+    const container = document.getElementById('contractsList');
+    if (filtered.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding:28px; color:var(--muted); font-size:0.88rem;">Belum ada data kontrak yang sesuai. Gunakan tombol <b>+ Simpan Pembukuan</b> di tab Kalkulator untuk menambahkan transaksi baru.</div>`;
+      return;
+    }
+
+    container.innerHTML = filtered.map(c => {
+      const s = getContractSummary(c);
+      const pct = Math.round((s.paidCount / s.totalCount) * 100);
+      const badge = s.isLunas
+        ? '<span class="badge badge-green">LUNAS</span>'
+        : (s.hasOverdue ? '<span class="badge badge-red">ADA JATUH TEMPO</span>' : '<span class="badge badge-blue">AKTIF</span>');
+      const unitLbl = c.tenorUnit === 'minggu' ? 'Mgg' : 'Bln';
+
+      const pillsHtml = c.installments.map(inst => {
+        const isLate = !inst.paid && inst.dueDate < today;
+        const cls = inst.paid ? 'paid' : (isLate ? 'late' : '');
+        const statusTxt = inst.paid
+          ? `Lunas (${fmtDateID(inst.paidDate)})${inst.penalty > 0 ? ' +Denda ' + fmtNum(inst.penalty) : ''}`
+          : (isLate ? `Telat! (${fmtDateID(inst.dueDate)})` : `Jatuh tempo ${fmtDateID(inst.dueDate)}`);
+        return `
+          <button type="button" class="inst-pill ${cls}" data-cid="${c.id}" data-ino="${inst.no}">
+            <strong>${unitLbl} #${inst.no} — ${fmtRp(inst.amount)}</strong>
+            <span style="color:${inst.paid ? '#15803d' : (isLate ? '#b91c1c' : '#64748b')};">${statusTxt}</span>
+          </button>
+        `;
+      }).join('');
+
+      return `
+        <div class="contract-card">
+          <div class="contract-head">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <strong style="font-size:0.98rem; color:var(--primary);">${c.buyerName}</strong>
+                ${badge}
+                <span style="font-size:0.74rem; color:var(--muted);">${c.id}</span>
+              </div>
+              <div class="contract-meta">${c.deviceName} &bull; Pokok ${fmtRp(c.pokok)} &bull; DP ${fmtRp(c.dp)} &bull; Admin ${fmtRp(c.admin)} &bull; Margin ${c.marginPct}%</div>
+              ${c.notes ? `<div class="contract-meta">Catatan: ${c.notes}</div>` : ''}
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.78rem; color:var(--muted);">Progres: <b>${s.paidCount}/${s.totalCount}</b> (${pct}%)</div>
+              <div style="font-size:0.86rem; font-weight:800; color:var(--warn);">Sisa Tagihan: ${fmtRp(s.sisaTagihan)}</div>
+              <div style="font-size:0.78rem; font-weight:700; color:var(--success);">Proyeksi Untung: ${fmtRp(s.proyeksiUntung)}</div>
+            </div>
+          </div>
+
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;"></div></div>
+
+          <div class="inst-grid">${pillsHtml}</div>
+
+          <div class="contract-actions">
+            <button type="button" class="btn btn-wa btn-sm" data-action="tagih" data-cid="${c.id}">Tagih WA</button>
+            <button type="button" class="btn btn-outline btn-sm" data-action="kuitansi" data-cid="${c.id}">Cetak Kuitansi</button>
+            <button type="button" class="btn btn-outline btn-sm" data-action="copy-kuitansi" data-cid="${c.id}">Salin Kuitansi WA</button>
+            <button type="button" class="btn btn-danger btn-sm" data-action="delete" data-cid="${c.id}" style="margin-left:auto;">Hapus</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    container.querySelectorAll('.inst-pill').forEach(btn => {
+      btn.addEventListener('click', () => openPayModal(btn.dataset.cid, parseInt(btn.dataset.ino, 10)));
+    });
+
+    container.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cid = btn.dataset.cid;
+        const act = btn.dataset.action;
+        const contract = db.contracts.find(x => x.id === cid);
+        if (!contract) return;
+        if (act === 'tagih') sendWaReminder(contract);
+        else if (act === 'kuitansi') printReceipt(contract);
+        else if (act === 'copy-kuitansi') copyReceiptWa(contract);
+        else if (act === 'delete') {
+          if (confirm(`Hapus kontrak atas nama ${contract.buyerName}?`)) {
+            db.contracts = db.contracts.filter(x => x.id !== cid);
+            saveDB();
+            renderBookkeeping();
+            showToast('Kontrak dihapus');
+          }
+        }
+      });
+    });
+  }
+
+  // ===================== PAY MODAL =====================
+  function openPayModal(cid, instNo) {
+    const c = db.contracts.find(x => x.id === cid);
+    if (!c) return;
+    const inst = c.installments.find(x => x.no === instNo);
+    if (!inst) return;
+    activePayTarget = { cid, instNo };
+
+    const today = todayISO();
+    let defaultLate = inst.paid ? inst.lateDays : 0;
+    if (!inst.paid && inst.dueDate < today) {
+      const diffMs = new Date(today) - new Date(inst.dueDate);
+      defaultLate = Math.max(0, Math.floor(diffMs / 86400000));
+    }
+    const rate = Number(db.settings.penaltyRate) || 0.5;
+    const defaultPenalty = inst.paid ? (inst.penalty || 0) : Math.round(inst.amount * (rate / 100) * defaultLate);
+
+    document.getElementById('payModalTitle').textContent = `Angsuran ke-${inst.no} — ${c.buyerName}`;
+    document.getElementById('payModalInfo').innerHTML = `
+      <div>Unit: <strong>${c.deviceName}</strong></div>
+      <div>Jatuh Tempo: <strong>${fmtDateID(inst.dueDate)}</strong></div>
+      <div>Pokok Angsuran: <strong>${fmtRp(inst.amount)}</strong> (Denda ${String(rate).replace('.', ',')}%/hari)</div>
+    `;
+    document.getElementById('mPayDate').value = inst.paidDate || today;
+    document.getElementById('mPayLateDays').value = defaultLate;
+    document.getElementById('mPayPenalty').value = fmtNum(defaultPenalty);
+    document.getElementById('btnUnpayInst').classList.toggle('hidden', !inst.paid);
+    document.getElementById('btnConfirmPay').textContent = inst.paid ? 'Perbarui Data Bayar' : 'Tandai Lunas';
+    updatePayModalTotal();
+    document.getElementById('modalPay').classList.add('open');
+  }
+
+  function updatePayModalTotal() {
+    if (!activePayTarget) return;
+    const c = db.contracts.find(x => x.id === activePayTarget.cid);
+    const inst = c && c.installments.find(x => x.no === activePayTarget.instNo);
+    if (!inst) return;
+    const pen = parseDigits(document.getElementById('mPayPenalty').value);
+    document.getElementById('mPayTotalDisp').textContent = fmtRp(inst.amount + pen);
+  }
+
+  function sendWaReminder(c) {
+    const s = getContractSummary(c);
+    if (!s.nextUnpaid) {
+      showToast('Kontrak ini sudah lunas');
+      return;
+    }
+    const today = todayISO();
+    let lateDays = 0;
+    if (s.nextUnpaid.dueDate < today) {
+      lateDays = Math.max(0, Math.floor((new Date(today) - new Date(s.nextUnpaid.dueDate)) / 86400000));
+    }
+    const rate = Number(db.settings.penaltyRate) || 0.5;
+    const denda = Math.round(s.nextUnpaid.amount * (rate / 100) * lateDays);
+    const total = s.nextUnpaid.amount + denda;
+    const unitLbl = c.tenorUnit === 'minggu' ? 'Minggu' : 'Bulan';
+
+    const lines = [
+      `Halo Kak *${c.buyerName}*,`,
+      `Mengingatkan jadwal pembayaran kredit HP *${c.deviceName}* (${db.settings.storeName}):`,
+      `• Angsuran ke-${s.nextUnpaid.no} (${unitLbl}): *${fmtRp(s.nextUnpaid.amount)}*`,
+      `• Jatuh Tempo: ${fmtDateID(s.nextUnpaid.dueDate)}`
+    ];
+    if (lateDays > 0) {
+      lines.push(`• Keterlambatan: ${lateDays} hari`);
+      lines.push(`• Denda (${String(rate).replace('.', ',')}%/hari): ${fmtRp(denda)}`);
+      lines.push(`• *Total Bayar: ${fmtRp(total)}*`);
+    }
+    lines.push('', 'Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran. Terima kasih.');
+    const msg = lines.join('\n');
+
+    let phone = String(c.buyerWa || '').replace(/[^0-9]/g, '');
+    if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+    if (phone.length >= 9) {
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    } else {
+      copyText(msg, 'Nomor WA kosong — pesan tagihan disalin ke clipboard');
+    }
+  }
+
+  function copyReceiptWa(c) {
+    const paidList = c.installments.filter(x => x.paid);
+    const lastPaid = paidList[paidList.length - 1];
+    const s = getContractSummary(c);
+    const lines = [
+      `*KUITANSI PEMBAYARAN KREDIT HP*`,
+      `Toko: ${db.settings.storeName}`,
+      `No. Kontrak: ${c.id}`,
+      `Nama: ${c.buyerName}`,
+      `Unit: ${c.deviceName}`,
+      lastPaid
+        ? `Pembayaran: Angsuran ke-${lastPaid.no} (${fmtDateID(lastPaid.paidDate)})`
+        : `Pembayaran: DP + Admin Awal (${fmtDateID(c.startDate)})`,
+      lastPaid
+        ? `Nominal: *${fmtRp(lastPaid.amount + (lastPaid.penalty || 0))}*${lastPaid.penalty > 0 ? ' (termasuk denda ' + fmtRp(lastPaid.penalty) + ')' : ''}`
+        : `Nominal: *${fmtRp(c.dp + c.admin)}*`,
+      `Progres: ${s.paidCount}/${s.totalCount} angsuran | Sisa: ${fmtRp(s.sisaTagihan)}`,
+      `Status: *${s.isLunas ? 'LUNAS' : 'TERIMA KASIH'}*`
+    ];
+    copyText(lines.join('\n'), 'Kuitansi WA berhasil disalin!');
+  }
+
+  function printReceipt(c) {
+    const paidList = c.installments.filter(x => x.paid);
+    const lastPaid = paidList[paidList.length - 1];
+    const s = getContractSummary(c);
+    const pa = document.getElementById('printArea');
+    pa.innerHTML = `
+      <h2>KUITANSI PEMBAYARAN ANGSURAN</h2>
+      <div class="p-sub">${db.settings.storeName} ${db.settings.storeAddr ? '— ' + db.settings.storeAddr : ''} ${db.settings.storeWa ? '| WA: ' + db.settings.storeWa : ''}</div>
+      <table>
+        <tr><th style="width:34%;">No. Kontrak</th><td>${c.id}</td></tr>
+        <tr><th>Nama Pembeli</th><td>${c.buyerName} (${c.buyerWa || '-'})</td></tr>
+        <tr><th>Unit HP</th><td>${c.deviceName}</td></tr>
+        <tr><th>Pembayaran Terakhir</th><td>${lastPaid ? `Angsuran ke-${lastPaid.no} — Tanggal ${fmtDateID(lastPaid.paidDate)}` : `DP + Biaya Admin (${fmtDateID(c.startDate)})`}</td></tr>
+        <tr><th>Nominal Diterima</th><td><strong>${lastPaid ? fmtRp(lastPaid.amount + (lastPaid.penalty || 0)) : fmtRp(c.dp + c.admin)}</strong></td></tr>
+        <tr><th>Progres Cicilan</th><td>${s.paidCount} dari ${s.totalCount} angsuran (${s.isLunas ? 'LUNAS' : 'Sisa Tagihan ' + fmtRp(s.sisaTagihan)})</td></tr>
+      </table>
+      <div class="sig-grid">
+        <div><div>Pembeli,</div><div class="sig-space"></div><div>(${c.buyerName})</div></div>
+        <div><div>Penerima / Toko,</div><div class="sig-space"></div><div>(${db.settings.storeName})</div></div>
+      </div>
+    `;
+    window.print();
+  }
+
+  function printAkadFromCalc() {
+    const res = computeCalc();
+    const rate = String(db.settings.penaltyRate).replace('.', ',');
+    const schedRows = Array.from({length: res.t.count}, (_, idx) => {
+      const i = idx + 1;
+      return `<tr><td>Angsuran ke-${i}</td><td>${fmtDateID(addPeriodDate(calcState.startDate, i, res.t.unit))}</td><td style="text-align:right;">${fmtRp(res.angsuran)}</td><td>[ &nbsp;&nbsp; ] Lunas</td></tr>`;
+    }).join('');
+
+    const pa = document.getElementById('printArea');
+    pa.innerHTML = `
+      <h2>NOTA & SURAT PERJANJIAN KREDIT HP</h2>
+      <div class="p-sub">${db.settings.storeName} ${db.settings.storeAddr ? '— ' + db.settings.storeAddr : ''} ${db.settings.storeWa ? '| WA: ' + db.settings.storeWa : ''}</div>
+      <p>Pada tanggal <b>${fmtDateID(calcState.startDate)}</b>, telah disepakati transaksi pembelian handphone secara kredit dengan rincian berikut:</p>
+      <table>
+        <tr><th style="width:35%;">Nama Pembeli / No. KTP</th><td>.......................................................................</td></tr>
+        <tr><th>No. HP / Alamat</th><td>.......................................................................</td></tr>
+        <tr><th>Tipe HP / IMEI</th><td>.......................................................................</td></tr>
+        <tr><th>Harga Unit</th><td>${fmtRp(res.p)}</td></tr>
+        <tr><th>Uang Muka (DP ${res.dpPct}%) + Admin</th><td>${fmtRp(res.dp)} + ${fmtRp(res.admin)} = <b>${fmtRp(res.dp + res.admin)}</b></td></tr>
+        <tr><th>Skema Cicilan</th><td><b>${res.t.count}x ${res.t.per}an — ${fmtRp(res.angsuran)} / ${res.t.per}</b></td></tr>
+      </table>
+      <p><b>Jadwal Jatuh Tempo Pembayaran:</b></p>
+      <table>
+        <thead><tr><th>Periode</th><th>Jatuh Tempo</th><th style="text-align:right;">Nominal</th><th>Paraf / Status</th></tr></thead>
+        <tbody>${schedRows}</tbody>
+      </table>
+      <p><b>Ketentuan Singkat:</b></p>
+      <ol style="padding-left:18px; margin-bottom:10px;">
+        <li>Pembeli wajib melunasi angsuran tepat waktu sesuai jadwal di atas.</li>
+        <li>Keterlambatan pembayaran dikenakan denda sebesar <b>${rate}% per hari</b> (${fmtRp(res.dendaHarian)}/hari) dari nominal angsuran tertunggak.</li>
+        <li>Selama cicilan belum lunas, unit HP tidak diperkenankan dijual, digadaikan, atau dipindahtangankan kepada pihak ketiga.</li>
+        <li>Persyaratan administrasi: ${db.settings.syarat}.</li>
+      </ol>
+      <div class="sig-grid">
+        <div><div>Pihak Pembeli,</div><div class="sig-space"></div><div>( ........................................ )</div></div>
+        <div><div>Pihak Toko / Penjual,</div><div class="sig-space"></div><div>(${db.settings.storeName})</div></div>
+      </div>
+    `;
+    window.print();
+  }
+
+  // ===================== CATALOG RENDER =====================
+  function calcCatalogItem(price, marginPct, isDp20, count) {
+    const dp = isDp20 ? Math.round(price * 0.2) : 0;
+    const admin = isDp20 ? 50000 : 100000;
+    const sisa = price - dp;
+    const angs = Math.round(((sisa * (1 + marginPct / 100)) / count) / 1000) * 1000;
+    const untung = (dp + admin + angs * count) - price;
+    return { dp, admin, angs, untung };
+  }
+
+  function renderCatalog() {
+    const marginPct = Math.max(0, parseFloat(document.getElementById('catMargin').value) || 25);
+    const prices = [...db.catalogPrices].sort((a, b) => a - b);
+    const tbody = document.getElementById('catalogBody');
+    tbody.innerHTML = prices.map(p => {
+      const d0Bln = calcCatalogItem(p, marginPct, false, 3);
+      const d0Mgg = calcCatalogItem(p, marginPct, false, 12);
+      const d2Bln = calcCatalogItem(p, marginPct, true, 3);
+      const d2Mgg = calcCatalogItem(p, marginPct, true, 12);
+      return `
+        <tr>
+          <td><strong>${fmtRp(p)}</strong></td>
+          <td class="num">${fmtRp(d0Bln.angs)}</td>
+          <td class="num">${fmtRp(d0Mgg.angs)}</td>
+          <td class="num">${fmtRp(d2Bln.dp)}</td>
+          <td class="num">${fmtRp(d2Bln.angs)}</td>
+          <td class="num">${fmtRp(d2Mgg.angs)}</td>
+          <td class="num seller-only" style="color:var(--success); font-weight:700;">${fmtRp(d0Bln.untung)}</td>
+          <td><button type="button" class="btn btn-outline btn-sm" data-del-price="${p}">Hapus</button></td>
+        </tr>
+      `;
+    }).join('');
+
+    tbody.querySelectorAll('[data-del-price]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = parseInt(btn.dataset.delPrice, 10);
+        db.catalogPrices = db.catalogPrices.filter(x => x !== val);
+        saveDB();
+        renderCatalog();
+      });
+    });
+  }
+
+  function copyCatalogWa() {
+    const scheme = document.getElementById('catScheme').value;
+    const marginPct = Math.max(0, parseFloat(document.getElementById('catMargin').value) || 25);
+    const prices = [...db.catalogPrices].sort((a, b) => a - b);
+    const lines = [
+      `*DAFTAR ANGSURAN KREDIT HP — ${db.settings.storeName.toUpperCase()}*`,
+      `Tenor 3 Bulan (Bulanan 3x / Mingguan 12x)`,
+      ''
+    ];
+
+    if (scheme === 'both' || scheme === 'dp0') {
+      lines.push('*PAKET DP 0% (Biaya Admin Rp 100.000)*');
+      prices.forEach(p => {
+        const b = calcCatalogItem(p, marginPct, false, 3);
+        const m = calcCatalogItem(p, marginPct, false, 12);
+        lines.push(`• Harga ${fmtRp(p)} → *${fmtRp(b.angs)}/bln* (3x) | *${fmtRp(m.angs)}/mgg* (12x)`);
+      });
+      lines.push('');
+    }
+    if (scheme === 'both' || scheme === 'dp20') {
+      lines.push('*PAKET DP 20% (Biaya Admin Rp 50.000)*');
+      prices.forEach(p => {
+        const b = calcCatalogItem(p, marginPct, true, 3);
+        const m = calcCatalogItem(p, marginPct, true, 12);
+        lines.push(`• Harga ${fmtRp(p)} (DP ${fmtRp(b.dp)}) → *${fmtRp(b.angs)}/bln* (3x) | *${fmtRp(m.angs)}/mgg* (12x)`);
+      });
+      lines.push('');
+    }
+    lines.push(`Syarat mudah: ${db.settings.syarat}.`);
+    if (db.settings.storeWa) lines.push(`Info & Pengajuan WA: ${db.settings.storeWa}`);
+    copyText(lines.join('\n'), 'Katalog promo WA berhasil disalin!');
+  }
+
+  // ===================== SETTINGS RENDER =====================
+  function renderSettings() {
+    document.getElementById('headerStoreName').textContent = db.settings.storeName || 'KreditHP Pro';
+    document.getElementById('setStoreName').value = db.settings.storeName || '';
+    document.getElementById('setStoreWa').value = db.settings.storeWa || '';
+    document.getElementById('setStoreAddr').value = db.settings.storeAddr || '';
+    document.getElementById('setModalAwal').value = fmtNum(db.settings.modalAwal || 0);
+    document.getElementById('setPenaltyRate').value = db.settings.penaltyRate ?? 0.5;
+    document.getElementById('setSyarat').value = db.settings.syarat || '';
+  }
+
+  // ===================== NAVIGATION & EVENTS =====================
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('tab-' + tabName);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('.nav-tab, .nav-m-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === tabName);
+    });
+    if (tabName === 'book') renderBookkeeping();
+    if (tabName === 'catalog') renderCatalog();
+    if (tabName === 'settings') renderSettings();
+  }
+
+  document.querySelectorAll('.nav-tab, .nav-m-btn').forEach(b => {
+    b.addEventListener('click', () => switchTab(b.dataset.tab));
+  });
+
+  document.getElementById('buyerModeToggle').addEventListener('click', () => {
+    buyerMode = !buyerMode;
+    document.body.classList.toggle('buyer-mode', buyerMode);
+    document.getElementById('buyerModeLabel').textContent = buyerMode ? 'Mode Pembeli: AKTIF' : 'Mode Pembeli: OFF';
+    if (buyerMode) {
+      const activeTab = document.querySelector('.tab-panel.active');
+      if (activeTab && activeTab.classList.contains('seller-only')) switchTab('calc');
+      showToast('Mode Pembeli aktif — info untung & modal disembunyikan');
+    } else {
+      showToast('Mode Pemilik Toko aktif');
+    }
+  });
+
+  // Calc input listeners
+  document.getElementById('inStartDate').value = calcState.startDate;
+  document.getElementById('inPokok').addEventListener('input', e => {
+    const v = parseDigits(e.target.value);
+    calcState.pokok = v;
+    e.target.value = v > 0 ? fmtNum(v) : '';
+    syncPricePills();
+    renderCalc();
+  });
+
+  document.querySelectorAll('#quickPrices .pill').forEach(b => {
+    b.addEventListener('click', () => {
+      calcState.pokok = parseInt(b.dataset.price, 10);
+      document.getElementById('inPokok').value = fmtNum(calcState.pokok);
+      syncPricePills();
+      renderCalc();
+    });
+  });
+
+  document.querySelectorAll('#tenorChoices .choice-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('#tenorChoices .choice-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      calcState.tenorMode = b.dataset.tenor;
+      document.getElementById('customTenorBox').classList.toggle('hidden', calcState.tenorMode !== 'custom');
+      renderCalc();
+    });
+  });
+
+  document.getElementById('inCustomTenorCount').addEventListener('input', e => {
+    calcState.customTenorCount = parseInt(e.target.value, 10) || 6;
+    renderCalc();
+  });
+  document.getElementById('inCustomTenorUnit').addEventListener('change', e => {
+    calcState.customTenorUnit = e.target.value;
+    renderCalc();
+  });
+
+  document.getElementById('inMargin').addEventListener('input', e => {
+    calcState.marginPct = parseFloat(e.target.value) || 0;
+    syncMarginPills();
+    renderCalc();
+  });
+
+  document.querySelectorAll('#quickMargins .pill').forEach(b => {
+    b.addEventListener('click', () => {
+      calcState.marginPct = parseFloat(b.dataset.m);
+      document.getElementById('inMargin').value = calcState.marginPct;
+      syncMarginPills();
+      renderCalc();
+    });
+  });
+
+  document.querySelectorAll('#schemeChoices .choice-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('#schemeChoices .choice-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      calcState.scheme = b.dataset.scheme;
+      document.getElementById('customSchemeBox').classList.toggle('hidden', calcState.scheme !== 'custom');
+      renderCalc();
+    });
+  });
+
+  document.querySelectorAll('input[name="customDpMode"]').forEach(r => {
+    r.addEventListener('change', e => {
+      calcState.customDpMode = e.target.value;
+      document.getElementById('wrapCustomDpPct').classList.toggle('hidden', calcState.customDpMode !== 'pct');
+      document.getElementById('wrapCustomDpRp').classList.toggle('hidden', calcState.customDpMode !== 'rp');
+      renderCalc();
+    });
+  });
+
+  document.getElementById('inCustomDpPct').addEventListener('input', e => {
+    calcState.customDpPct = parseFloat(e.target.value) || 0;
+    renderCalc();
+  });
+  document.getElementById('inCustomDpRp').addEventListener('input', e => {
+    const v = parseDigits(e.target.value);
+    calcState.customDpRp = v;
+    e.target.value = v > 0 ? fmtNum(v) : '';
+    renderCalc();
+  });
+  document.getElementById('inCustomAdmin').addEventListener('input', e => {
+    const v = parseDigits(e.target.value);
+    calcState.customAdmin = v;
+    e.target.value = v > 0 ? fmtNum(v) : '';
+    renderCalc();
+  });
+
+  document.querySelectorAll('input[name="marginBasis"]').forEach(r => {
+    r.addEventListener('change', e => {
+      calcState.marginBasis = e.target.value;
+      renderCalc();
+    });
+  });
+
+  document.getElementById('inRoundMode').addEventListener('change', e => {
+    calcState.roundMode = e.target.value;
+    renderCalc();
+  });
+  document.getElementById('inStartDate').addEventListener('change', e => {
+    calcState.startDate = e.target.value || todayISO();
+    renderCalc();
+  });
+  document.getElementById('inLateDaysSim').addEventListener('input', e => {
+    calcState.lateDaysSim = Math.max(0, parseInt(e.target.value, 10) || 0);
+    renderCalc();
+  });
+
+  // Calc Actions
+  document.getElementById('btnCopyWa').addEventListener('click', () => {
+    const res = computeCalc();
+    const lines = [
+      `*SIMULASI KREDIT HP — ${db.settings.storeName.toUpperCase()}*`,
+      `Tenor: *${res.t.label}*`,
+      `Harga Unit: ${fmtRp(res.p)}`,
+      `DP (${res.dpPct}%): ${fmtRp(res.dp)}`,
+      `Biaya Admin: ${fmtRp(res.admin)}`,
+      `Total Bayar Awal: *${fmtRp(res.dp + res.admin)}*`,
+      `Angsuran / ${res.t.per} (${res.t.count}x): *${fmtRp(res.angsuran)}*`,
+      '',
+      `Syarat: ${db.settings.syarat}.`
+    ];
+    if (db.settings.storeWa) lines.push(`Hubungi WA: ${db.settings.storeWa}`);
+    copyText(lines.join('\n'), 'Penawaran WA berhasil disalin!');
+  });
+
+  document.getElementById('btnPrintAkad').addEventListener('click', printAkadFromCalc);
+
+  document.getElementById('btnOpenSaveModal').addEventListener('click', () => {
+    const res = computeCalc();
+    document.getElementById('savePreviewBox').innerHTML = `
+      <strong>Ringkasan Akad:</strong> Pokok ${fmtRp(res.p)} | DP ${fmtRp(res.dp)} | Admin ${fmtRp(res.admin)} |
+      <strong>${res.t.count}x ${fmtRp(res.angsuran)}/${res.t.per}</strong> (Margin ${res.m}%)
+    `;
+    document.getElementById('mBuyerName').value = '';
+    document.getElementById('mBuyerWa').value = '';
+    document.getElementById('mBuyerNik').value = '';
+    document.getElementById('mDeviceName').value = '';
+    document.getElementById('mNotes').value = '';
+    document.getElementById('modalSave').classList.add('open');
+  });
+
+  document.getElementById('btnConfirmSaveContract').addEventListener('click', () => {
+    const buyerName = document.getElementById('mBuyerName').value.trim();
+    const deviceName = document.getElementById('mDeviceName').value.trim();
+    if (!buyerName || !deviceName) {
+      showToast('Isi Nama Pembeli dan Tipe HP terlebih dahulu');
+      return;
+    }
+    const res = computeCalc();
+    const installments = Array.from({length: res.t.count}, (_, idx) => ({
+      no: idx + 1,
+      dueDate: addPeriodDate(calcState.startDate, idx + 1, res.t.unit),
+      amount: res.angsuran,
+      paid: false,
+      paidDate: '',
+      lateDays: 0,
+      penalty: 0
+    }));
+    const newContract = {
+      id: 'KHP-' + String(Date.now()).slice(-5),
+      buyerName,
+      buyerWa: document.getElementById('mBuyerWa').value.trim(),
+      buyerNik: document.getElementById('mBuyerNik').value.trim(),
+      deviceName,
+      notes: document.getElementById('mNotes').value.trim(),
+      startDate: calcState.startDate,
+      pokok: res.p,
+      dp: res.dp,
+      dpPct: res.dpPct,
+      admin: res.admin,
+      marginPct: res.m,
+      tenorCount: res.t.count,
+      tenorUnit: res.t.unit,
+      angsuran: res.angsuran,
+      installments
+    };
+    db.contracts.unshift(newContract);
+    saveDB();
+    document.getElementById('modalSave').classList.remove('open');
+    showToast('Transaksi disimpan ke Pembukuan!');
+    switchTab('book');
+  });
+
+  // Modal close buttons
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById(btn.dataset.close).classList.remove('open');
+    });
+  });
+
+  // Pay Modal listeners
+  document.getElementById('mPayLateDays').addEventListener('input', e => {
+    if (!activePayTarget) return;
+    const c = db.contracts.find(x => x.id === activePayTarget.cid);
+    const inst = c && c.installments.find(x => x.no === activePayTarget.instNo);
+    if (!inst) return;
+    const days = Math.max(0, parseInt(e.target.value, 10) || 0);
+    const rate = Number(db.settings.penaltyRate) || 0.5;
+    document.getElementById('mPayPenalty').value = fmtNum(Math.round(inst.amount * (rate / 100) * days));
+    updatePayModalTotal();
+  });
+
+  document.getElementById('mPayPenalty').addEventListener('input', e => {
+    const v = parseDigits(e.target.value);
+    e.target.value = v > 0 ? fmtNum(v) : '0';
+    updatePayModalTotal();
+  });
+
+  document.getElementById('btnWaivePenalty').addEventListener('click', () => {
+    document.getElementById('mPayPenalty').value = '0';
+    updatePayModalTotal();
+  });
+
+  document.getElementById('btnConfirmPay').addEventListener('click', () => {
+    if (!activePayTarget) return;
+    const c = db.contracts.find(x => x.id === activePayTarget.cid);
+    const inst = c && c.installments.find(x => x.no === activePayTarget.instNo);
+    if (!inst) return;
+    inst.paid = true;
+    inst.paidDate = document.getElementById('mPayDate').value || todayISO();
+    inst.lateDays = Math.max(0, parseInt(document.getElementById('mPayLateDays').value, 10) || 0);
+    inst.penalty = parseDigits(document.getElementById('mPayPenalty').value);
+    saveDB();
+    document.getElementById('modalPay').classList.remove('open');
+    renderBookkeeping();
+    showToast(`Angsuran ke-${inst.no} ditandai LUNAS`);
+  });
+
+  document.getElementById('btnUnpayInst').addEventListener('click', () => {
+    if (!activePayTarget) return;
+    const c = db.contracts.find(x => x.id === activePayTarget.cid);
+    const inst = c && c.installments.find(x => x.no === activePayTarget.instNo);
+    if (!inst) return;
+    inst.paid = false;
+    inst.paidDate = '';
+    inst.lateDays = 0;
+    inst.penalty = 0;
+    saveDB();
+    document.getElementById('modalPay').classList.remove('open');
+    renderBookkeeping();
+    showToast(`Status lunas angsuran ke-${inst.no} dibatalkan`);
+  });
+
+  // Bookkeeping filter listeners
+  document.getElementById('bookSearch').addEventListener('input', renderBookkeeping);
+  document.getElementById('bookFilter').addEventListener('change', renderBookkeeping);
+  document.getElementById('btnNewContractFromBook').addEventListener('click', () => switchTab('calc'));
+
+  // Catalog listeners
+  document.getElementById('catMargin').addEventListener('input', renderCatalog);
+  document.getElementById('btnCopyCatalogWa').addEventListener('click', copyCatalogWa);
+  document.getElementById('catAddPrice').addEventListener('input', e => {
+    const v = parseDigits(e.target.value);
+    e.target.value = v > 0 ? fmtNum(v) : '';
+  });
+  document.getElementById('btnAddCatPrice').addEventListener('click', () => {
+    const v = parseDigits(document.getElementById('catAddPrice').value);
+    if (v < 100000) { showToast('Masukkan nominal harga minimal Rp 100.000'); return; }
+    if (!db.catalogPrices.includes(v)) {
+      db.catalogPrices.push(v);
+      saveDB();
+      renderCatalog();
+    }
+    document.getElementById('catAddPrice').value = '';
+    showToast(`Harga ${fmtRp(v)} ditambahkan ke katalog`);
+  });
+
+  // Settings & Backup listeners
+  document.getElementById('setModalAwal').addEventListener('input', e => {
+    const v = parseDigits(e.target.value);
+    e.target.value = v > 0 ? fmtNum(v) : '';
+  });
+
+  document.getElementById('btnSaveSettings').addEventListener('click', () => {
+    db.settings.storeName = document.getElementById('setStoreName').value.trim() || 'KreditHP Pro';
+    db.settings.storeWa = document.getElementById('setStoreWa').value.trim();
+    db.settings.storeAddr = document.getElementById('setStoreAddr').value.trim();
+    db.settings.modalAwal = parseDigits(document.getElementById('setModalAwal').value);
+    db.settings.penaltyRate = parseFloat(document.getElementById('setPenaltyRate').value) || 0;
+    db.settings.syarat = document.getElementById('setSyarat').value.trim() || 'KTP, KK & Slip Gaji';
+    saveDB();
+    renderSettings();
+    renderCalc();
+    renderBookkeeping();
+    showToast('Pengaturan usaha berhasil disimpan!');
+  });
+
+  document.getElementById('btnExportJson').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Backup_KreditHP_Pro_${todayISO()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('File backup JSON berhasil diunduh');
+  });
+
+  document.getElementById('inImportJson').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        if (!parsed.settings || !Array.isArray(parsed.contracts)) throw new Error('Invalid');
+        db = parsed;
+        saveDB();
+        renderSettings();
+        renderCalc();
+        renderBookkeeping();
+        renderCatalog();
+        showToast('Data backup berhasil dipulihkan!');
+      } catch (err) {
+        showToast('File backup tidak valid');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  document.getElementById('btnExportCsv').addEventListener('click', () => {
+    const headers = ['ID Kontrak','Tanggal Akad','Nama Pembeli','No WA','Tipe HP','Harga Pokok','DP','Biaya Admin','Margin (%)','Tenor','Angsuran','Terbayar','Sisa Tagihan','Denda Masuk','Proyeksi Untung','Status'];
+    const rows = db.contracts.map(c => {
+      const s = getContractSummary(c);
+      return [
+        c.id, c.startDate, c.buyerName, c.buyerWa, c.deviceName,
+        c.pokok, c.dp, c.admin, c.marginPct,
+        `${c.tenorCount} ${c.tenorUnit}`, c.angsuran,
+        `${s.paidCount}/${s.totalCount}`, s.sisaTagihan, s.totalPenalty,
+        s.proyeksiUntung, s.isLunas ? 'LUNAS' : (s.hasOverdue ? 'TERLAMBAT' : 'AKTIF')
+      ].map(val => `"${String(val ?? '').replace(/"/g, '""')}"`).join(',');
+    });
+    const csv = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Laporan_Pembukuan_KreditHP_${todayISO()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Laporan CSV (Excel) berhasil diunduh');
+  });
+
+  document.getElementById('btnRestoreSample').addEventListener('click', () => {
+    db.contracts = createSampleContracts();
+    saveDB();
+    renderBookkeeping();
+    showToast('2 data sampel uji coba berhasil dimuat ulang');
+  });
+
+  document.getElementById('btnClearAllData').addEventListener('click', () => {
+    if (confirm('Yakin hapus seluruh kontrak pembukuan? Pastikan sudah export backup JSON jika diperlukan.')) {
+      db.contracts = [];
+      saveDB();
+      renderBookkeeping();
+      showToast('Seluruh kontrak pembukuan dihapus');
+    }
+  });
+
+  // PWA SERVICE WORKER & INSTALL PROMPT
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+
+  let deferredInstallPrompt = null;
+  const btnInstallPwa = document.getElementById('btnInstallPwa');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if (btnInstallPwa) btnInstallPwa.classList.add('show');
+  });
+
+  if (btnInstallPwa) {
+    btnInstallPwa.addEventListener('click', async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice && choice.outcome === 'accepted') {
+        btnInstallPwa.classList.remove('show');
+        showToast('Aplikasi KreditHP Pro sedang dipasang...');
+      }
+      deferredInstallPrompt = null;
+    });
+  }
+
+  window.addEventListener('appinstalled', () => {
+    if (btnInstallPwa) btnInstallPwa.classList.remove('show');
+    showToast('KreditHP Pro berhasil dipasang di layar utama!');
+  });
+
+  // INIT
+  renderSettings();
+  renderCalc();
+  renderBookkeeping();
+  renderCatalog();
+})();
+</script>
+</body>
+</html>
