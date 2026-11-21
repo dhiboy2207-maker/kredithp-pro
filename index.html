@@ -6,6 +6,11 @@
 <meta name="theme-color" content="#0f3d6e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="KreditHP Pro">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <title>KreditHP Pro — Kalkulator & Pembukuan Usaha Kredit HP</title>
 <style>
   :root {
@@ -73,6 +78,14 @@
   body.buyer-mode .buyer-toggle { background: #0d9488; border-color: #5eead4; }
   .dot-ind { width: 9px; height: 9px; border-radius: 50%; background: #cbd5e1; }
   body.buyer-mode .dot-ind { background: #bef264; box-shadow: 0 0 8px #bef264; }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .install-pwa-btn {
+    display: none; align-items: center; gap: 6px;
+    background: #0d9488; color: #fff; border: 1px solid #5eead4;
+    padding: 6px 12px; border-radius: 999px;
+    font-size: 0.78rem; font-weight: 800; cursor: pointer;
+  }
+  .install-pwa-btn.show { display: inline-flex; }
 
   /* DESKTOP NAV */
   .nav-desktop {
@@ -368,9 +381,12 @@
         <p>Kalkulator Simulasi, Margin, Arus Kas & Pembukuan Offline</p>
       </div>
     </div>
-    <div class="buyer-toggle" id="buyerModeToggle" title="Sembunyikan untung, margin & modal toko saat layar dilihat pembeli">
-      <span class="dot-ind"></span>
-      <span id="buyerModeLabel">Mode Pembeli: OFF</span>
+    <div class="topbar-actions">
+      <button type="button" class="install-pwa-btn" id="btnInstallPwa">&#11015; Install App</button>
+      <div class="buyer-toggle" id="buyerModeToggle" title="Sembunyikan untung, margin & modal toko saat layar dilihat pembeli">
+        <span class="dot-ind"></span>
+        <span id="buyerModeLabel">Mode Pembeli: OFF</span>
+      </div>
     </div>
   </div>
 </header>
@@ -2143,6 +2159,39 @@
       renderBookkeeping();
       showToast('Seluruh kontrak pembukuan dihapus');
     }
+  });
+
+  // PWA SERVICE WORKER & INSTALL PROMPT
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+
+  let deferredInstallPrompt = null;
+  const btnInstallPwa = document.getElementById('btnInstallPwa');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if (btnInstallPwa) btnInstallPwa.classList.add('show');
+  });
+
+  if (btnInstallPwa) {
+    btnInstallPwa.addEventListener('click', async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice && choice.outcome === 'accepted') {
+        btnInstallPwa.classList.remove('show');
+        showToast('Aplikasi KreditHP Pro sedang dipasang...');
+      }
+      deferredInstallPrompt = null;
+    });
+  }
+
+  window.addEventListener('appinstalled', () => {
+    if (btnInstallPwa) btnInstallPwa.classList.remove('show');
+    showToast('KreditHP Pro berhasil dipasang di layar utama!');
   });
 
   // INIT
