@@ -1,0 +1,26 @@
+{
+  "name": "KreditHP Pro — Kalkulator & Pembukuan Kredit HP",
+  "short_name": "KreditHP Pro",
+  "description": "Kalkulator simulasi angsuran, margin, arus kas, katalog promo WA, dan pembukuan usaha kredit HP offline.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f1f5f9",
+  "theme_color": "#0f3d6e",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
